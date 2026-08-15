@@ -54,7 +54,7 @@ public class Account implements Serializable {
     }
 
     public static void setIdCount(int idCount) {
-        Account.idCount = idCount;
+        Account.idCount = idCount + 1;
     }
 
     /// Users option
@@ -89,9 +89,5 @@ public class Account implements Serializable {
             System.out.println(item);
         }
         System.out.println("Total for cart: " + total);
-    }
-
-    public void setIdCount(Account account) {
-        idCount = account.getId();
     }
 }

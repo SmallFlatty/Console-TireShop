@@ -24,14 +24,20 @@ public class ConsoleUI implements MenuOptions {
         Scanner sc = new Scanner(System.in);
         HashMap<String, Account> accounts = new HashMap<>();
         PasswordService passwordService = new PasswordService();
-
         File file = new File("src/main/java/TireProject/InformationFiles/Accounts.dat");
+        /// Variable for maxId
+        int maxId = 0;
+
         if (file.exists()) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
                 while (true) {
                     Account account = (Account) ois.readObject();
                     String nameForArray = account.getName();
                     accounts.put(nameForArray, account);
+                    /// Searching max Id
+                    if(maxId < account.getId()){
+                        maxId = account.getId();
+                    }
                 }
             } catch (IOException e) {
                 System.out.println(e.getMessage() + "Something wrong with loading information about account object In Account file");
@@ -39,6 +45,9 @@ public class ConsoleUI implements MenuOptions {
                 System.out.println("Something wrong with reading file Accounts");
             }
         }
+        /// Send this id to Account object
+        Account.setIdCount(maxId);
+
         while (true) {
             System.out.println("Welcome to Tire Shop");
             System.out.println("For login type - Login\n" +
