@@ -50,8 +50,51 @@ public class ConsoleUI implements MenuOptions {
             String operation = sc.nextLine();
             switch (operation) {
                 case "1":
+                        for (Item item : items.values()) {
+                            System.out.println(item.toStringSmall());
+                        }
+                        System.out.println("Type item id which you want to manage");
+                        String itemId = sc.nextLine();
+                        int itemIdInt = -1;
+                        try {
+                            itemIdInt = Integer.parseInt(itemId);
+                        }catch(NumberFormatException e){
+                            System.out.println("Invalid item id");
+                        }
+                        if(!items.containsKey(itemIdInt)){
+                            System.out.println("Item with id " + itemId + " not found");
+                            break;
+                        }
+                        Item item = items.get(itemIdInt);
+                        System.out.println("Type operation which you want to perform");
+                        System.out.println("1 - Set New Quantity");
+                        System.out.println("2 - Set New Price");
+                        String operationType = sc.nextLine();
 
-                    break;
+                        if(operationType.equals("1")){
+                            System.out.println("Type new quantity");
+                            int quantity = 0;
+                            try {
+                                quantity = Integer.parseInt(sc.nextLine());
+                            }catch(NumberFormatException e){
+                                System.out.println("Invalid quantity");
+                            }
+                            item.setQuantity(quantity);
+                            System.out.println("Quantity successfully changed");
+                        }else if(operationType.equals("2")){
+                            System.out.println("Type new price");
+                            double price = 0;
+                            try{
+                                price = Double.parseDouble(sc.nextLine());
+                            }catch(NumberFormatException e){
+                                System.out.println("Invalid price");
+                            }
+                            item.setPrice(price);
+                            System.out.println("Price successfully changed");
+                        }
+
+
+                        break;
                 case "2":
                     System.out.println("Which type of item would you like to create: Tire / Wheel");
                     String itemType = sc.nextLine();
@@ -190,8 +233,8 @@ public class ConsoleUI implements MenuOptions {
                     System.out.println("Item was successfully deleted");
                     break;
                 case "4":
-                    for(Item item : items.values()){
-                        System.out.println(item.toString());
+                    for(Item itemTaken : items.values()){
+                        System.out.println(itemTaken.toString());
                     }
                     break;
                 case "5":
