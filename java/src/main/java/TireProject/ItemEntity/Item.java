@@ -62,13 +62,13 @@ public class Item implements Serializable {
 
     @Override
     public String toString() {
-        return "Item{" +
+        return "{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", quantity=" + quantity +
-                '}';
+                ',';
     }
     public String toStringSmall(){
         return "Item Id :" + id + "; " + "Name  :" + name + ";" + "Quantity :" + quantity + ";" + "Price :" + price;

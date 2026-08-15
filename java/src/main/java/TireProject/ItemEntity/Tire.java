@@ -35,10 +35,10 @@ public class Tire extends Item implements Serializable {
 
     @Override
     public String toString() {
-        return super.toString() + "\nTire{" +
+        return super.toString()  +
                 "tireSize='" + tireSize + '\'' +
                 ", speedRating=" + speedRating +
                 ", seasonType='" + seasonType + '\'' +
-                '}';
+                "}";
     }
 }

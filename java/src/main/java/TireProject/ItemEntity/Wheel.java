@@ -35,10 +35,10 @@ public class Wheel extends Item implements Serializable {
 
     @Override
     public String toString() {
-        return super.toString() + "\n Wheel{" +
+        return super.toString() +
                 "diameter='" + diameter + '\'' +
                 ", width='" + width + '\'' +
                 ", boltPattern='" + boltPattern + '\'' +
-                '}';
+                "}";
     }
 }

@@ -13,6 +13,7 @@ import java.util.Scanner;
 public class ConsoleUI implements MenuOptions {
     HashMap<String, Account> accounts = new HashMap<>();
     HashMap<Integer, Item> items = new HashMap<>();
+    Scanner sc = new Scanner(System.in);
     @Override
     public void showMenuForUser(Account account) {
         UIService uiService = new UIService();
@@ -114,25 +115,28 @@ public class ConsoleUI implements MenuOptions {
 
     @Override
     public void showMenuForAdmin(Account account) {
-        File file = new File("src/main/java/TireProject/InformationFiles/Items.dat");
+        File file = new File("C:\\Users\\Rostyslav\\Desktop\\Console-TireShop\\java\\src\\main\\java\\TireProject\\InformationFiles\\Items.dat");
         int maxId = 0;
-        try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))){
-            while(true){
-                Item item = (Item)ois.readObject();
-                int itemId = item.getId();
-                items.put(itemId, item);
-                if(maxId < itemId){
-                    maxId = itemId;
+        if(file.exists() && file.length()>0) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+                while(true) {
+                    Item item = (Item) ois.readObject();
+                    int itemId = item.getId();
+                    items.put(itemId, item);
+                    if (maxId < itemId) {
+                        maxId = itemId;
+                    }
                 }
+            } catch (IOException e) {
+                System.out.println("Error in opening file");
+            } catch (Exception e) {
+                System.out.println(e.getMessage() + "Something went wrong with reading file");
+                Item.setInexOfId(maxId + 1);
             }
-        }catch(IOException e){
-            System.out.println("Error in opening file");
-        }catch(Exception e){
-            System.out.println(e.getMessage() + "Something went wrong with reading file");
+        }else{
+            System.out.println("Please add new items for items file");
         }
-        Item.setInexOfId(maxId + 1);
         System.out.println("Admin panel was loaded");
-        Scanner sc = new Scanner(System.in);
         while(true) {
             System.out.println("Enter your choice");
             System.out.println("1 - Manage exists items");
@@ -354,23 +358,23 @@ public class ConsoleUI implements MenuOptions {
     public void userVerifyMenu() {
         Scanner sc = new Scanner(System.in);
         PasswordService passwordService = new PasswordService();
-        File file = new File("src/main/java/TireProject/InformationFiles/Accounts.dat");
+        File file = new File("C:\\Users\\Rostyslav\\Desktop\\Console-TireShop\\java\\src\\main\\java\\TireProject\\InformationFiles\\Accounts.dat");
         /// Variable for maxId
         int maxId = 0;
 
         if (file.exists()) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                while (true) {
+                while(true) {
                     Account account = (Account) ois.readObject();
                     String nameForArray = account.getName();
                     accounts.put(nameForArray, account);
                     /// Searching max Id
-                    if(maxId < account.getId()){
+                    if (maxId < account.getId()) {
                         maxId = account.getId();
                     }
                 }
             } catch (IOException e) {
-                System.out.println(e.getMessage() + "Something wrong with loading information about account object In Account file");
+                System.out.println();
             } catch (Exception e) {
                 System.out.println("Something wrong with reading file Accounts");
             }
@@ -387,13 +391,15 @@ public class ConsoleUI implements MenuOptions {
             /// User Interface for Login
             if (answer.equals("Login")) {
                 String name;
-                int countOfTriesPassword = 0;
                     while (true) {
-                        System.out.println("Enter your name");
+                        System.out.println("Enter your name; If you need to back type - back");
                         name = sc.nextLine();
                         if (accounts.containsKey(name)) {
                             break;
-                        } else {
+                        } else if(name.equals("back")){
+                            userVerifyMenu();
+                        }
+                        else {
                             System.out.println("This account does not exist, try again");
                         }
                     }
@@ -404,25 +410,16 @@ public class ConsoleUI implements MenuOptions {
                         String HashedPassword = passwordService.hashPassword(password);
 
                         Account account = accounts.get(name);
-                        if (countOfTriesPassword == 3) {
                             if (account.getHashedPassword().equals(HashedPassword)) {
                                 if (account.getName().equals("Admin")) {
-                                    sc.close();
                                     showMenuForAdmin(account);
                                 } else {
-                                    sc.close();
                                     showMenuForUser(account);
                                 }
                                 break;
                             } else {
                                 System.out.println("Incorrect password, try again");
-                                countOfTriesPassword++;
                             }
-
-                        }else{
-                            System.out.println("You already use all tries");
-                            userVerifyMenu();
-                        }
                     }
                 /// User Interface for Registration
             } else if (answer.equals("Reg")) {
@@ -483,10 +480,8 @@ public class ConsoleUI implements MenuOptions {
                                 oos.writeObject(account1);
                             }
                             if (account.getName().equals("Admin")) {
-                                sc.close();
                                 showMenuForAdmin(account);
                             } else {
-                                sc.close();
                                 showMenuForUser(account);
 
                             }
