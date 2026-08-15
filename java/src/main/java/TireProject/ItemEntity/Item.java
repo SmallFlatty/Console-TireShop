@@ -36,14 +36,6 @@ public class Item implements Serializable {
         return id;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public double getPrice() {
         return price;
     }
@@ -65,6 +57,8 @@ public class Item implements Serializable {
         Item.inexOfId = inexOfId;
     }
 
+
+
     @Override
     public String toString() {
         return "Item{" +
@@ -74,5 +68,8 @@ public class Item implements Serializable {
                 ", price=" + price +
                 ", quantity=" + quantity +
                 '}';
+    }
+    public String toStringSmall(){
+        return "Item Id :" + id + "; " + "Name  :" + name + ";" + "Quantity :" + quantity + ";" + "Price :" + price;
     }
 }
