@@ -90,4 +90,22 @@ public class Account implements Serializable {
         }
         System.out.println("Total for cart: " + total);
     }
+
+    public void buyItemsInShoppingCard(HashMap<Integer, Item> items) {
+       ArrayList<Item> arrayForItemObjects = new ArrayList<>();
+        for (Integer id : idItemsShoppingCard) {
+            Item item = items.get(id);
+            arrayForItemObjects.add(item);
+        }
+        double priceItemsShoppingCard = getTotalForCart(arrayForItemObjects);
+
+        if(this.balance >= priceItemsShoppingCard){
+            this.balance -= priceItemsShoppingCard;
+        }
+        for (Item item : arrayForItemObjects) {
+            int quantity = item.getQuantity();
+            item.setQuantity(quantity-1);
+        }
+        System.out.println("Total for cart: " + priceItemsShoppingCard + ";" + "Your Balance: " + this.balance);
+    }
 }

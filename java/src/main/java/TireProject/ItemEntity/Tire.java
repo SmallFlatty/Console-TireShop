@@ -12,6 +12,8 @@ public class Tire extends Item implements Serializable {
     private final char speedRating;
     private final String seasonType;
 
+    private final int typeItemId = 1;
+
     /// Constructors
     public Tire(String name, String description, double price, int quantity,String tireSize, char speedRating, String seasonType) {
         super(name, description, price, quantity);
@@ -25,6 +27,10 @@ public class Tire extends Item implements Serializable {
         this.tireSize = tireSize;
         this.seasonType = seasonType;
         this.speedRating = speedRating;
+    }
+
+    public int getTypeItemId() {
+        return typeItemId;
     }
 
     @Override

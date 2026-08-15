@@ -11,6 +11,9 @@ public class Wheel extends Item implements Serializable {
     private final String diameter;
     private final String width;
     private final String boltPattern;
+
+    private final int typeItemId = 0;
+
     /// Constructors
     public Wheel(String name, String description, double price, int quantity,String diameter, String width, String boltPattern) {
         super(name, description, price, quantity);
@@ -24,6 +27,10 @@ public class Wheel extends Item implements Serializable {
         this.diameter = diameter;
         this.width = width;
         this.boltPattern = boltPattern;
+    }
+
+    public int getTypeItemId() {
+        return typeItemId;
     }
 
     @Override

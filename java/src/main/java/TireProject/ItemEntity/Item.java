@@ -57,6 +57,7 @@ public class Item implements Serializable {
         Item.inexOfId = inexOfId;
     }
 
+    public int getTypeItemId(){return 0;}
 
 
     @Override

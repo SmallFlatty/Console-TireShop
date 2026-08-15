@@ -15,6 +15,100 @@ public class ConsoleUI implements MenuOptions {
     HashMap<Integer, Item> items = new HashMap<>();
     @Override
     public void showMenuForUser(Account account) {
+        UIService uiService = new UIService();
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            System.out.println("Welcome to Tire Shop");
+            System.out.println("Select the operation you want to perform:");
+            System.out.println("1 - See all items");
+            System.out.println("2 - See all items with filter");
+            System.out.println("3 - Add item to shopping cart");
+            System.out.println("4 - Check your shopping cart");
+            System.out.println("5 - Remove item from shopping cart");
+            System.out.println("6 - Buy items in shopping cart");
+            System.out.println("7 - Exit");
+
+            String operation = sc.nextLine();
+            switch (operation) {
+                case "1":
+                    uiService.printItems(items);
+                    break;
+                case "2":
+                    System.out.println("Which type of item would you like to see?");
+                    System.out.println("1 - Wheel");
+                    System.out.println("2 - Tire");
+
+                    String answer = sc.nextLine();
+                    if(answer.equals("1")){
+                        uiService.printItemsWithFilter(items,0);
+                    }else if(answer.equals("2")){
+                        uiService.printItemsWithFilter(items,1);
+                    }else{
+                        System.out.println("Invalid input");
+                    }
+                    break;
+                case "3":
+                    uiService.printItems(items);
+                    System.out.println("Which item would you like to add to shopping cart?");
+                    String itemId = sc.nextLine();
+                    int itemIdInt = 0;
+                    try{
+                        itemIdInt = Integer.parseInt(itemId);
+                        if(itemIdInt < 0){
+                            throw new NumberFormatException("Invalid input");
+                        }
+                    }catch(NumberFormatException e){
+                        System.out.println("Invalid input");
+                        break;
+                    }
+                    account.addItemToShoppingCard(itemIdInt);
+                    System.out.println("Item added successfully");
+                    break;
+                case "4":
+                    account.seeShoppingCard(items);
+                    break;
+                case "5":
+                    uiService.printItems(items);
+                    System.out.println("Which item would you like to remove from shopping cart?");
+                    String removeItemId = sc.nextLine();
+                    int removeItemIdInt = 0;
+                    try{
+                        removeItemIdInt = Integer.parseInt(removeItemId);
+                        if(removeItemIdInt < 0){
+                            throw new NumberFormatException("Invalid input");
+                        }
+                    }catch(NumberFormatException e){
+                        System.out.println("Invalid input");
+                    }
+                    account.removeItemFromShoppingCard(removeItemIdInt);
+                    System.out.println("Item removed successfully");
+                    break;
+                case "6":
+                    account.buyItemsInShoppingCard(items);
+                    File file1 = new File("src/main/java/TireProject/InformationFiles/Items.dat");
+                    try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file1))){
+                        for(Item item : items.values()){
+                            oos.writeObject(item);
+                        }
+                    }catch(IOException e){
+                        System.out.println(e.getMessage() + "Something went wrong with writing items to file");
+                    }
+                    System.out.println("Items was bought successfully");
+                case "7":
+                    File file = new File("src/main/java/TireProject/InformationFiles/Accounts.dat");
+                    try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))){
+                        for(Account account1 : accounts.values()){
+                            oos.writeObject(account1);
+                        }
+                    }catch(IOException e){
+                        System.out.println(e.getMessage() + "Something went wrong with writing to the file accounts");
+                    }
+                    userVerifyMenu();
+                default:
+                    System.out.println("Invalid input");
+                    break;
+            }
+        }
 
     }
 
