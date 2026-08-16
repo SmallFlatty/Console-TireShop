@@ -16,6 +16,7 @@ public class ConsoleUI implements MenuOptions {
     Scanner sc = new Scanner(System.in);
     UIService uiService = new UIService();
 
+    //TODO change initialisation data from methods to constructor!
 
     @Override
     public void showMenuForUser(Account account) {
@@ -102,6 +103,7 @@ public class ConsoleUI implements MenuOptions {
                     account.buyItemsInShoppingCard(items);
                     uiService.saveItemToFile(items); //TODO this method doest change array of items! Fix
                     System.out.println("Items was bought successfully");
+                    break;
                 case "7":
                     File file = new File("src/main/java/TireProject/InformationFiles/Accounts.dat");
                     try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))){
@@ -112,6 +114,7 @@ public class ConsoleUI implements MenuOptions {
                         System.out.println(e.getMessage() + "Something went wrong with writing to the file accounts");
                     }
                     userVerifyMenu();
+                    break;
                 default:
                     System.out.println("Invalid input");
                     break;
