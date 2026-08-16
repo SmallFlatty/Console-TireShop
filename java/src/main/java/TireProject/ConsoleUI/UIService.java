@@ -29,7 +29,7 @@ public class UIService {
         }
     }
     public void saveItemToFile(HashMap<Integer, Item> items) {
-        File file = new File("src/main/java/TireProject/InformationFiles/Items.dat");
+        File file = new File("java/src/main/java/TireProject/InformationFiles/Items.dat");
         try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))){
             for(Item item : items.values()) {
                 oos.writeObject(item);
@@ -48,4 +48,5 @@ public class UIService {
         }
         return maxId;
     }
+
 }

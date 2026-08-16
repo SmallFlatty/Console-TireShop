@@ -88,7 +88,12 @@ public class Account implements Serializable {
         for (Item item : arrayForItemObjects) {
             System.out.println(item);
         }
-        System.out.println("Total for cart: " + total);
+
+        if(total==0){
+            System.out.println("Your shopping card is empty");
+        }else {
+            System.out.println("Total for cart: " + total);
+        }
     }
 
     public void buyItemsInShoppingCard(HashMap<Integer, Item> items) {
@@ -101,11 +106,14 @@ public class Account implements Serializable {
 
         if(this.balance >= priceItemsShoppingCard){
             this.balance -= priceItemsShoppingCard;
+
+            for (Item item : arrayForItemObjects) {
+                int quantity = item.getQuantity();
+                item.setQuantity(quantity-1);
+            }
+            System.out.println("Total for cart: " + priceItemsShoppingCard + ";" + "Your Balance: " + this.balance);
+        }else{
+            System.out.println("Not enough money");
         }
-        for (Item item : arrayForItemObjects) {
-            int quantity = item.getQuantity();
-            item.setQuantity(quantity-1);
-        }
-        System.out.println("Total for cart: " + priceItemsShoppingCard + ";" + "Your Balance: " + this.balance);
     }
 }

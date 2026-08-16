@@ -15,11 +15,21 @@ public class ConsoleUI implements MenuOptions {
     HashMap<Integer,Item> items = new HashMap<>();
     Scanner sc = new Scanner(System.in);
     UIService uiService = new UIService();
+
+
     @Override
     public void showMenuForUser(Account account) {
+        File file1 = new File("java/src/main/java/TireProject/InformationFiles/Items.dat");
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file1))) {
+            while(true) {
+                Item item = (Item) ois.readObject();
+                int itemId = item.getId();
+                items.put(itemId, item);
+            }
+        }catch (Exception ignored) {}
         Scanner sc = new Scanner(System.in);
+        System.out.println("Welcome to Tire Shop");
         while (true) {
-            System.out.println("Welcome to Tire Shop");
             System.out.println("Select the operation you want to perform:");
             System.out.println("1 - See all items");
             System.out.println("2 - See all items with filter");
@@ -62,13 +72,17 @@ public class ConsoleUI implements MenuOptions {
                         System.out.println("Invalid input");
                         break;
                     }
-                    account.addItemToShoppingCard(itemIdInt);
-                    System.out.println("Item added successfully");
+                    if(items.containsKey(itemIdInt)) {
+                        account.addItemToShoppingCard(itemIdInt);
+                        System.out.println("Item added successfully");
+                    }else{
+                        System.out.println("Item not found");
+                    }
                     break;
                 case "4":
                     account.seeShoppingCard(items);
                     break;
-                case "5":
+                case "5": //TODO fix bug, printed all items,not only users shopping card. Array out of bounds if users type item id, Change logic to remove Items from shopping card.
                     uiService.printItems(items);
                     System.out.println("Which item would you like to remove from shopping cart?");
                     String removeItemId = sc.nextLine();
@@ -86,14 +100,7 @@ public class ConsoleUI implements MenuOptions {
                     break;
                 case "6":
                     account.buyItemsInShoppingCard(items);
-                    File file1 = new File("src/main/java/TireProject/InformationFiles/Items.dat");
-                    try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file1))){
-                        for(Item item : items.values()){
-                            oos.writeObject(item);
-                        }
-                    }catch(IOException e){
-                        System.out.println(e.getMessage() + "Something went wrong with writing items to file");
-                    }
+                    uiService.saveItemToFile(items); //TODO this method doest change array of items! Fix
                     System.out.println("Items was bought successfully");
                 case "7":
                     File file = new File("src/main/java/TireProject/InformationFiles/Accounts.dat");
@@ -115,7 +122,7 @@ public class ConsoleUI implements MenuOptions {
 
     @Override
     public void showMenuForAdmin(Account account) {
-        File file = new File("src/main/java/TireProject/InformationFiles/Items.dat");
+        File file = new File("java/src/main/java/TireProject/InformationFiles/Items.dat");
         int maxId = 0;
         if(file.exists() && file.length()>0) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
@@ -337,7 +344,7 @@ public class ConsoleUI implements MenuOptions {
     public void userVerifyMenu() {
         Scanner sc = new Scanner(System.in);
         PasswordService passwordService = new PasswordService();
-        File file = new File("src/main/java/TireProject/InformationFiles/Accounts.dat");
+        File file = new File("java/src/main/java/TireProject/InformationFiles/Accounts.dat");
         /// Variable for maxId
         int maxId = 0;
 
@@ -460,9 +467,10 @@ public class ConsoleUI implements MenuOptions {
                             }
                             if (account.getName().equals("Admin")) {
                                 showMenuForAdmin(account);
+                                break;
                             } else {
                                 showMenuForUser(account);
-
+                                break;
                             }
                         } catch (IOException e) {
                             System.out.println(e.getMessage() + "Something wrong with writing account object In Account file");
