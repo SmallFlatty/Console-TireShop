@@ -12,11 +12,11 @@ import java.util.Scanner;
 
 public class ConsoleUI implements MenuOptions {
     HashMap<String, Account> accounts = new HashMap<>();
-    HashMap<Integer, Item> items = new HashMap<>();
+    HashMap<Integer,Item> items = new HashMap<>();
     Scanner sc = new Scanner(System.in);
+    UIService uiService = new UIService();
     @Override
     public void showMenuForUser(Account account) {
-        UIService uiService = new UIService();
         Scanner sc = new Scanner(System.in);
         while (true) {
             System.out.println("Welcome to Tire Shop");
@@ -141,7 +141,7 @@ public class ConsoleUI implements MenuOptions {
             System.out.println("Enter your choice");
             System.out.println("1 - Manage exists items");
             System.out.println("2 - Add new item");
-            System.out.println("3 - Delete item");
+            System.out.println("3 - Delete item");// Баг, при видаленні id лишаються, треба вставити і в ключ максимальний id
             System.out.println("4 - See all items");
             System.out.println("5 - Exit");
 
@@ -190,8 +190,7 @@ public class ConsoleUI implements MenuOptions {
                             item.setPrice(price);
                             System.out.println("Price successfully changed");
                         }
-
-
+                        uiService.saveItemToFile(items);
                         break;
                 case "2":
                     System.out.println("Which type of item would you like to create: Tire / Wheel");
@@ -240,18 +239,16 @@ public class ConsoleUI implements MenuOptions {
                             }catch(NumberFormatException | NullPointerException e){
                                 quantity = 0;
                             }
-
+                            Tire tire;
                             if(quantity == 0 || price == 0){
-                                Tire tire = new Tire(name, description, tireSize, seasonType, speedRating);
-                                int tireId = tire.getId();
-                                items.put(tireId, tire);
-                                break;
+                                tire = new Tire(name, description, tireSize, seasonType, speedRating);
                             }else{
-                                Tire tire = new Tire(name, description, price , quantity, tireSize, speedRating, seasonType);
-                                int tireId = tire.getId();
-                                items.put(tireId, tire);
-                                break;
+                                tire = new Tire(name, description, price , quantity, tireSize, speedRating, seasonType);
                             }
+                            int newMaxId = uiService.getMaxId(items);
+                            tire.setId(newMaxId + 1);
+                            items.put(newMaxId + 1, tire);
+                            break;
                         }
                     }else if(itemType.equals("Wheel")){
                         /// Wheel Properties
@@ -287,19 +284,19 @@ public class ConsoleUI implements MenuOptions {
                             }catch(NumberFormatException | NullPointerException e){
                                 quantity = 0;
                             }
+                            Wheel wheel;
                             if(quantity == 0 || price == 0){
-                                Wheel wheel = new Wheel(name, description, diameter, width, boltPattern);
-                                int wheelId = wheel.getId();
-                                items.put(wheelId, wheel);
-                                break;
+                                wheel = new Wheel(name, description, diameter, width, boltPattern);
                             }else{
-                                Wheel wheel = new Wheel(name, description, price , quantity, diameter, width, boltPattern);
-                                int wheelId = wheel.getId();
-                                items.put(wheelId, wheel);
-                                break;
+                                wheel = new Wheel(name, description, price , quantity, diameter, width, boltPattern);
                             }
+                            int newMaxId = uiService.getMaxId(items);
+                            wheel.setId(newMaxId + 1);
+                            items.put(newMaxId + 1, wheel);
+                            break;
                         }
                     }
+                    uiService.saveItemToFile(items);
                     break;
                 case "3":
                     for(Item i : items.values()){
@@ -318,33 +315,15 @@ public class ConsoleUI implements MenuOptions {
                     }catch(Exception e){
                         System.out.println("Item with id " + id + " not found");
                     }
-                    try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))){
-                        for(Item i : items.values()){
-                            oos.writeObject(i);
-                        }
-                        Item.setInexOfId(id-1);
-                    }catch(IOException e){
-                        System.out.println("Error in opening file");
-                    }catch(Exception e){
-                        System.out.println(e.getMessage() + "Something went wrong with reading file");
-                    }
+                    Item.setInexOfId(id-1);
+                    uiService.saveItemToFile(items);
                     System.out.println("Item was successfully deleted");
                     break;
                 case "4":
-                    for(Item itemTaken : items.values()){
-                        System.out.println(itemTaken.toString());
-                    }
+                    uiService.printItems(items);
                     break;
                 case "5":
-                    try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))){
-                        for(Item i : items.values()){
-                            oos.writeObject(i);
-                        }
-                    }catch(IOException e){
-                        System.out.println("Error in opening file");
-                    }catch(Exception e){
-                        System.out.println(e.getMessage() + "Something went wrong with writing to file");
-                    }
+                    uiService.saveItemToFile(items);
                     userVerifyMenu();
                     break;
                 default:

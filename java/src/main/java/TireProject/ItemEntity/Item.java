@@ -8,7 +8,7 @@ public class Item implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     /// Properties
-    private final int id;
+    private int id;
     private final String name;
     private final String description;
     private double price;
@@ -55,6 +55,10 @@ public class Item implements Serializable {
 
     public static void setInexOfId(int inexOfId) {
         Item.inexOfId = inexOfId;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getTypeItemId(){return 0;}
