@@ -115,7 +115,7 @@ public class ConsoleUI implements MenuOptions {
 
     @Override
     public void showMenuForAdmin(Account account) {
-        File file = new File("C:\\Users\\Rostyslav\\Desktop\\Console-TireShop\\java\\src\\main\\java\\TireProject\\InformationFiles\\Items.dat");
+        File file = new File("src/main/java/TireProject/InformationFiles/Items.dat");
         int maxId = 0;
         if(file.exists() && file.length()>0) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
@@ -337,7 +337,7 @@ public class ConsoleUI implements MenuOptions {
     public void userVerifyMenu() {
         Scanner sc = new Scanner(System.in);
         PasswordService passwordService = new PasswordService();
-        File file = new File("C:\\Users\\Rostyslav\\Desktop\\Console-TireShop\\java\\src\\main\\java\\TireProject\\InformationFiles\\Accounts.dat");
+        File file = new File("src/main/java/TireProject/InformationFiles/Accounts.dat");
         /// Variable for maxId
         int maxId = 0;
 
