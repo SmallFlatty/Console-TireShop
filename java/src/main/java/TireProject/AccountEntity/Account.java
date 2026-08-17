@@ -79,11 +79,8 @@ public class Account implements Serializable {
         return total;
     }
     public void seeShoppingCard(HashMap<Integer, Item> items) {
-        ArrayList<Item> arrayForItemObjects = new ArrayList<>();
-        for (Integer id : idItemsShoppingCard) {
-            Item item = items.get(id);
-            arrayForItemObjects.add(item);
-        }
+        ArrayList<Item> arrayForItemObjects = getItemArray(items);
+
         double total = getTotalForCart(arrayForItemObjects);
 
         for (Item item : arrayForItemObjects) {
@@ -98,24 +95,10 @@ public class Account implements Serializable {
     }
 
     public HashMap<Integer,Item> buyItemsInShoppingCard(HashMap<Integer, Item> items) {
-       ArrayList<Item> arrayForItemObjects = new ArrayList<>();
-        for (Integer id : idItemsShoppingCard) {
-            Item item = items.get(id);
-            arrayForItemObjects.add(item);
-        }
+        ArrayList<Item> arrayForItemObjects = getItemArray(items);
+
         double priceItemsShoppingCard = getTotalForCart(arrayForItemObjects);
-//
-//        if(this.balance >= priceItemsShoppingCard){
-//            this.balance -= priceItemsShoppingCard;
-//
-//            for (Item item : arrayForItemObjects) {
-//                int quantity = item.getQuantity();
-//                item.setQuantity(quantity-1);
-//            }
-//            System.out.println("Total for cart: " + priceItemsShoppingCard + ";" + "Your Balance: " + this.balance);
-//        }else{
-//            System.out.println("Not enough money");
-//        }
+
         if(priceItemsShoppingCard <= balance) {
             for (Integer id : idItemsShoppingCard) {
                 System.out.println(id);
@@ -130,5 +113,16 @@ public class Account implements Serializable {
             System.out.println("Not enough money");
         }
         return items;
+    }
+
+    private ArrayList<Item> getItemArray(HashMap<Integer, Item> items){
+        ArrayList<Item> arrayForItemObjects = new ArrayList<>();
+        for (Integer id : idItemsShoppingCard) {
+            if(items.get(id) != null) {
+                Item item = items.get(id);
+                arrayForItemObjects.add(item);
+            }
+        }
+        return arrayForItemObjects;
     }
 }

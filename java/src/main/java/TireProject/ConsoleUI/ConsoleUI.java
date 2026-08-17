@@ -11,24 +11,25 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class ConsoleUI implements MenuOptions {
-    HashMap<String, Account> accounts = new HashMap<>();
-    HashMap<Integer,Item> items = new HashMap<>();
-    Scanner sc = new Scanner(System.in);
-    UIService uiService = new UIService();
+    HashMap<String, Account> accounts;
+    HashMap<Integer,Item> items;
+    Scanner sc;
+    UIService uiService;
+    PasswordService passwordService;
+    public ConsoleUI() {
+        accounts = new HashMap<>();
+        items = new HashMap<>();
+        sc = new Scanner(System.in);
+        uiService = new UIService();
+        passwordService = new PasswordService();
 
-    //TODO change initialisation data from methods to constructor!
+        items = uiService.loadItemsFromFile();
+        accounts = uiService.loadAccountsFromFile();
+
+    }
 
     @Override
     public void showMenuForUser(Account account) {
-        File file1 = new File("java/src/main/java/TireProject/InformationFiles/Items.dat");
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file1))) {
-            while(true) {
-                Item item = (Item) ois.readObject();
-                int itemId = item.getId();
-                items.put(itemId, item);
-            }
-        }catch (Exception ignored) {}
-        Scanner sc = new Scanner(System.in);
         System.out.println("Welcome to Tire Shop");
         while (true) {
             System.out.println("Select the operation you want to perform:");
@@ -63,7 +64,7 @@ public class ConsoleUI implements MenuOptions {
                     uiService.printItems(items);
                     System.out.println("Which item would you like to add to shopping cart?");
                     String itemId = sc.nextLine();
-                    int itemIdInt = 0;
+                    int itemIdInt;
                     try{
                         itemIdInt = Integer.parseInt(itemId);
                         if(itemIdInt < 0){
@@ -83,7 +84,7 @@ public class ConsoleUI implements MenuOptions {
                 case "4":
                     account.seeShoppingCard(items);
                     break;
-                case "5": //TODO fix bug, printed all items,not only users shopping card. Array out of bounds if users type item id, Change logic to remove Items from shopping card. - FIXED!
+                case "5":
                     account.seeShoppingCard(items);
                     System.out.println("Which item would you like to remove from shopping cart?");
                     String removeItemId = sc.nextLine();
@@ -100,17 +101,10 @@ public class ConsoleUI implements MenuOptions {
                     break;
                 case "6":
                     items = account.buyItemsInShoppingCard(items);
-                    uiService.saveItemToFile(items); //TODO this method doest change array of items! Fix - FIXED!
+                    uiService.saveItemToFile(items);
                     break;
                 case "7":
-                    File file = new File("java/src/main/java/TireProject/InformationFiles/Accounts.dat");
-                    try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))){
-                        for(Account account1 : accounts.values()){
-                            oos.writeObject(account1);
-                        }
-                    }catch(IOException e){
-                        System.out.println(e.getMessage() + "Something went wrong with writing to the file accounts");
-                    }
+                    uiService.saveAccountsToFile(accounts);
                     userVerifyMenu();
                     break;
                 default:
@@ -123,27 +117,6 @@ public class ConsoleUI implements MenuOptions {
 
     @Override
     public void showMenuForAdmin(Account account) {
-        File file = new File("java/src/main/java/TireProject/InformationFiles/Items.dat");
-        int maxId = 0;
-        if(file.exists() && file.length()>0) {
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                while(true) {
-                    Item item = (Item) ois.readObject();
-                    int itemId = item.getId();
-                    items.put(itemId, item);
-                    if (maxId < itemId) {
-                        maxId = itemId;
-                    }
-                }
-            } catch (IOException e) {
-                System.out.println("Items successfully loaded");
-            } catch (Exception e) {
-                System.out.println(e.getMessage() + "Something went wrong with reading file");
-                Item.setInexOfId(maxId + 1);
-            }
-        }else{
-            System.out.println("Please add new items for items file");
-        }
         System.out.println("Admin panel was loaded");
         while(true) {
             System.out.println("Enter your choice");
@@ -253,9 +226,7 @@ public class ConsoleUI implements MenuOptions {
                             }else{
                                 tire = new Tire(name, description, price , quantity, tireSize, speedRating, seasonType);
                             }
-                            int newMaxId = uiService.getMaxId(items);
-                            tire.setId(newMaxId + 1);
-                            items.put(newMaxId + 1, tire);
+                            items.put(tire.getId(), tire);
                             break;
                         }
                     }else if(itemType.equals("Wheel")){
@@ -298,9 +269,7 @@ public class ConsoleUI implements MenuOptions {
                             }else{
                                 wheel = new Wheel(name, description, price , quantity, diameter, width, boltPattern);
                             }
-                            int newMaxId = uiService.getMaxId(items);
-                            wheel.setId(newMaxId + 1);
-                            items.put(newMaxId + 1, wheel);
+                            items.put(wheel.getId(), wheel);
                             break;
                         }
                     }
@@ -323,8 +292,10 @@ public class ConsoleUI implements MenuOptions {
                     }catch(Exception e){
                         System.out.println("Item with id " + id + " not found");
                     }
-                    Item.setInexOfId(id-1);
                     uiService.saveItemToFile(items);
+                    for(Account acc : accounts.values()){
+                        acc.removeItemFromShoppingCard(id);
+                    }
                     System.out.println("Item was successfully deleted");
                     break;
                 case "4":
@@ -343,32 +314,6 @@ public class ConsoleUI implements MenuOptions {
 
     @Override
     public void userVerifyMenu() {
-        Scanner sc = new Scanner(System.in);
-        PasswordService passwordService = new PasswordService();
-        File file = new File("java/src/main/java/TireProject/InformationFiles/Accounts.dat");
-        /// Variable for maxId
-        int maxId = 0;
-
-        if (file.exists()) {
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                while(true) {
-                    Account account = (Account) ois.readObject();
-                    String nameForArray = account.getName();
-                    accounts.put(nameForArray, account);
-                    /// Searching max Id
-                    if (maxId < account.getId()) {
-                        maxId = account.getId();
-                    }
-                }
-            } catch (IOException e) {
-                System.out.println();
-            } catch (Exception e) {
-                System.out.println("Something wrong with reading file Accounts");
-            }
-        }
-        /// Send this id to Account object
-        Account.setIdCount(maxId);
-
         while (true) {
             System.out.println("Welcome to Tire Shop");
             System.out.println("For login type - Login\n" +
@@ -394,19 +339,29 @@ public class ConsoleUI implements MenuOptions {
                         System.out.println("Enter your password");
                         String password = sc.nextLine();
 
-                        String HashedPassword = passwordService.hashPassword(password);
-
                         Account account = accounts.get(name);
-                            if (account.getHashedPassword().equals(HashedPassword)) {
-                                if (account.getName().equals("Admin")) {
-                                    showMenuForAdmin(account);
-                                } else {
-                                    showMenuForUser(account);
-                                }
-                                break;
+
+                        boolean verified = passwordService.verifyPassword(password,account.getHashedPassword());
+
+                        if(verified){
+                            if (account.getName().equals("Admin")) {
+                                showMenuForAdmin(account);
                             } else {
-                                System.out.println("Incorrect password, try again");
+                                showMenuForUser(account);
                             }
+                        }else{
+                            System.out.println("Incorrect password, try again");
+                        }
+//                            if (account.getHashedPassword().equals(HashedPassword)) {
+//                                if (account.getName().equals("Admin")) {
+//                                    showMenuForAdmin(account);
+//                                } else {
+//                                    showMenuForUser(account);
+//                                }
+//                                break;
+//                            } else {
+//                                System.out.println("Incorrect password, try again");
+//                            }
                     }
                 /// User Interface for Registration
             } else if (answer.equalsIgnoreCase("Reg")) {
@@ -459,23 +414,15 @@ public class ConsoleUI implements MenuOptions {
                 /// Code part with writing account to file
                     //Create new account for new user
                     Account account = new Account(name, password, balanceDouble);
+                    accounts.put(account.getName(), account);
+                    uiService.saveAccountsToFile(accounts);
 
-                    if (file.exists()) {
-                        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                            accounts.put(name, account);
-                            for (Account account1 : accounts.values()) {
-                                oos.writeObject(account1);
-                            }
-                            if (account.getName().equals("Admin")) {
-                                showMenuForAdmin(account);
-                                break;
-                            } else {
-                                showMenuForUser(account);
-                                break;
-                            }
-                        } catch (IOException e) {
-                            System.out.println(e.getMessage() + "Something wrong with writing account object In Account file");
-                        }
+                    if(account.getName().equals("Admin")){
+                        showMenuForAdmin(account);
+                        break;
+                    }else{
+                        showMenuForUser(account);
+                        break;
                     }
             } else {
                 // Users bad input
