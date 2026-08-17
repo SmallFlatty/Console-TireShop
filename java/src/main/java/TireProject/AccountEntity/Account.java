@@ -17,7 +17,7 @@ public class Account implements Serializable {
     private String name;
     private String hashedPassword;
     private double balance;
-    ArrayList<Integer> idItemsShoppingCard = new ArrayList<>();
+    ArrayList<Integer> idItemsShoppingCard;
 
     private static int idCount = 1;
     /// Getters
@@ -27,6 +27,7 @@ public class Account implements Serializable {
         PasswordService passwordService = new PasswordService();
         this.hashedPassword = passwordService.hashPassword(password);
         this.balance = balance;
+        this.idItemsShoppingCard = new ArrayList<>();
     }
 
     public int getId() {
@@ -67,11 +68,6 @@ public class Account implements Serializable {
 
     public double getTotalForCart(ArrayList<Item> items) {
         double total = 0;
-//        for(int i = 0; i <idItemsShoppingCard.size(); i++){
-//            if(items.containsKey(idItemsShoppingCard.get(i))){
-//                arrayOfKeys[count++] = idItemsShoppingCard.get(i);
-//            }
-//        }
         for(Item item : items){
             total += item.getPrice();
         }
@@ -96,24 +92,38 @@ public class Account implements Serializable {
         }
     }
 
-    public void buyItemsInShoppingCard(HashMap<Integer, Item> items) {
+    public HashMap<Integer,Item> buyItemsInShoppingCard(HashMap<Integer, Item> items) {
        ArrayList<Item> arrayForItemObjects = new ArrayList<>();
         for (Integer id : idItemsShoppingCard) {
             Item item = items.get(id);
             arrayForItemObjects.add(item);
         }
         double priceItemsShoppingCard = getTotalForCart(arrayForItemObjects);
-
-        if(this.balance >= priceItemsShoppingCard){
-            this.balance -= priceItemsShoppingCard;
-
-            for (Item item : arrayForItemObjects) {
-                int quantity = item.getQuantity();
-                item.setQuantity(quantity-1);
+//
+//        if(this.balance >= priceItemsShoppingCard){
+//            this.balance -= priceItemsShoppingCard;
+//
+//            for (Item item : arrayForItemObjects) {
+//                int quantity = item.getQuantity();
+//                item.setQuantity(quantity-1);
+//            }
+//            System.out.println("Total for cart: " + priceItemsShoppingCard + ";" + "Your Balance: " + this.balance);
+//        }else{
+//            System.out.println("Not enough money");
+//        }
+        if(priceItemsShoppingCard <= balance) {
+            for (Integer id : idItemsShoppingCard) {
+                System.out.println(id);
+                if (items.containsKey(id)) {
+                    Item item = items.get(id);
+                    System.out.println(item);
+                    item.setQuantity(item.getQuantity() - 1);
+                }
             }
-            System.out.println("Total for cart: " + priceItemsShoppingCard + ";" + "Your Balance: " + this.balance);
+            System.out.println("Your shopping card is bought successfully");
         }else{
             System.out.println("Not enough money");
         }
+        return items;
     }
 }

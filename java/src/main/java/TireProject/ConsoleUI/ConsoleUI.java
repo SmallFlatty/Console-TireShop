@@ -100,12 +100,11 @@ public class ConsoleUI implements MenuOptions {
                     System.out.println("Item removed successfully");
                     break;
                 case "6":
-                    account.buyItemsInShoppingCard(items);
-                    uiService.saveItemToFile(items); //TODO this method doest change array of items! Fix
-                    System.out.println("Items was bought successfully");
+                    items = account.buyItemsInShoppingCard(items);
+                    uiService.saveItemToFile(items); //TODO this method doest change array of items! Fix - FIXED!
                     break;
                 case "7":
-                    File file = new File("src/main/java/TireProject/InformationFiles/Accounts.dat");
+                    File file = new File("java/src/main/java/TireProject/InformationFiles/Accounts.dat");
                     try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))){
                         for(Account account1 : accounts.values()){
                             oos.writeObject(account1);
@@ -138,7 +137,7 @@ public class ConsoleUI implements MenuOptions {
                     }
                 }
             } catch (IOException e) {
-                System.out.println("Error in opening file");
+                System.out.println("Items successfully loaded");
             } catch (Exception e) {
                 System.out.println(e.getMessage() + "Something went wrong with reading file");
                 Item.setInexOfId(maxId + 1);
@@ -378,7 +377,7 @@ public class ConsoleUI implements MenuOptions {
             String answer = sc.nextLine();
 
             /// User Interface for Login
-            if (answer.equals("Login")) {
+            if (answer.equalsIgnoreCase("login")) {
                 String name;
                     while (true) {
                         System.out.println("Enter your name; If you need to back type - back");
@@ -411,7 +410,7 @@ public class ConsoleUI implements MenuOptions {
                             }
                     }
                 /// User Interface for Registration
-            } else if (answer.equals("Reg")) {
+            } else if (answer.equalsIgnoreCase("Reg")) {
                 String name;
                 String balance;
                 double balanceDouble;
