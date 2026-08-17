@@ -63,7 +63,12 @@ public class Account implements Serializable {
         this.idItemsShoppingCard.add(id);
     }
     public void removeItemFromShoppingCard(int id) {
-        this.idItemsShoppingCard.remove(id);
+        if(this.idItemsShoppingCard.contains(id)) {
+            this.idItemsShoppingCard.remove(this.idItemsShoppingCard.indexOf(id));
+            System.out.println("Item removed successfully");
+        }else{
+            System.out.println("Item not found in your shopping card");
+        }
     }
 
     public double getTotalForCart(ArrayList<Item> items) {

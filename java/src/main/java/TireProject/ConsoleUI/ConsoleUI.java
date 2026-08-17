@@ -83,8 +83,8 @@ public class ConsoleUI implements MenuOptions {
                 case "4":
                     account.seeShoppingCard(items);
                     break;
-                case "5": //TODO fix bug, printed all items,not only users shopping card. Array out of bounds if users type item id, Change logic to remove Items from shopping card.
-                    uiService.printItems(items);
+                case "5": //TODO fix bug, printed all items,not only users shopping card. Array out of bounds if users type item id, Change logic to remove Items from shopping card. - FIXED!
+                    account.seeShoppingCard(items);
                     System.out.println("Which item would you like to remove from shopping cart?");
                     String removeItemId = sc.nextLine();
                     int removeItemIdInt = 0;
@@ -97,7 +97,6 @@ public class ConsoleUI implements MenuOptions {
                         System.out.println("Invalid input");
                     }
                     account.removeItemFromShoppingCard(removeItemIdInt);
-                    System.out.println("Item removed successfully");
                     break;
                 case "6":
                     items = account.buyItemsInShoppingCard(items);
