@@ -6,7 +6,6 @@ import TireProject.ItemEntity.Tire;
 import TireProject.ItemEntity.Wheel;
 import TireProject.VerifyService.PasswordService;
 
-import java.io.*;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -105,8 +104,7 @@ public class ConsoleUI implements MenuOptions {
                     break;
                 case "7":
                     uiService.saveAccountsToFile(accounts);
-                    userVerifyMenu();
-                    break;
+                    return;
                 default:
                     System.out.println("Invalid input");
                     break;
@@ -122,7 +120,7 @@ public class ConsoleUI implements MenuOptions {
             System.out.println("Enter your choice");
             System.out.println("1 - Manage exists items");
             System.out.println("2 - Add new item");
-            System.out.println("3 - Delete item");// Баг, при видаленні id лишаються, треба вставити і в ключ максимальний id
+            System.out.println("3 - Delete item");
             System.out.println("4 - See all items");
             System.out.println("5 - Exit");
 
@@ -204,22 +202,27 @@ public class ConsoleUI implements MenuOptions {
                             System.out.println("Enter season type");
                             seasonType = sc.nextLine();
 
-                            System.out.println("Enter speed rating");
-                            speedRating = sc.nextLine().charAt(0);
+                            try {
+                                System.out.println("Enter speed rating");
+                                String speedRatingStr  = sc.nextLine();
+                                if(speedRatingStr.isEmpty()){
+                                    System.out.println("Invalid input");
+                                    break;
+                                }else{
+                                    speedRating = speedRatingStr.charAt(0);
+                                }
 
-
-                            System.out.println("Enter price");
-                            try{
+                                System.out.println("Enter price");
                                 price = Double.parseDouble(sc.nextLine());
-                            }catch(NumberFormatException | NullPointerException e){
-                                price = 0;
-                            }
-                            System.out.println("Enter quantity");
-                            try{
+
+                                System.out.println("Enter quantity");
                                 quantity = Integer.parseInt(sc.nextLine());
+
                             }catch(NumberFormatException | NullPointerException e){
-                                quantity = 0;
+                                System.out.println("Invalid input, try again");
+                                break;
                             }
+
                             Tire tire;
                             if(quantity == 0 || price == 0){
                                 tire = new Tire(name, description, tireSize, seasonType, speedRating);
@@ -251,17 +254,16 @@ public class ConsoleUI implements MenuOptions {
                             System.out.println("Enter bolt pattern");
                             boltPattern = sc.nextLine();
 
-                            System.out.println("Enter price");
                             try{
+                                System.out.println("Enter price");
                                 price = Double.parseDouble(sc.nextLine());
-                            }catch(NumberFormatException | NullPointerException e){
-                                price = 0;
-                            }
-                            System.out.println("Enter quantity");
-                            try{
+
+                                System.out.println("Enter quantity");
                                 quantity = Integer.parseInt(sc.nextLine());
+
                             }catch(NumberFormatException | NullPointerException e){
-                                quantity = 0;
+                                System.out.println("Invalid input, try again");
+                                break;
                             }
                             Wheel wheel;
                             if(quantity == 0 || price == 0){
@@ -303,8 +305,7 @@ public class ConsoleUI implements MenuOptions {
                     break;
                 case "5":
                     uiService.saveItemToFile(items);
-                    userVerifyMenu();
-                    break;
+                    return;
                 default:
                     System.out.println("Invalid choice, try again");
             }
@@ -329,7 +330,7 @@ public class ConsoleUI implements MenuOptions {
                         if (accounts.containsKey(name)) {
                             break;
                         } else if(name.equals("back")){
-                            userVerifyMenu();
+                            return;
                         }
                         else {
                             System.out.println("This account does not exist, try again");
@@ -346,8 +347,10 @@ public class ConsoleUI implements MenuOptions {
                         if(verified){
                             if (account.getName().equals("Admin")) {
                                 showMenuForAdmin(account);
+                                break;
                             } else {
                                 showMenuForUser(account);
+                                break;
                             }
                         }else{
                             System.out.println("Incorrect password, try again");
@@ -378,7 +381,7 @@ public class ConsoleUI implements MenuOptions {
                             System.out.println("Enter valid name");
                         }else if(accounts.containsKey(name)){
                             System.out.println("This account already exists");
-                            userVerifyMenu();
+                            return;
                         }
                         else {
                             break;

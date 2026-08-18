@@ -71,23 +71,28 @@ public class Account implements Serializable {
         }
     }
 
-    public double getTotalForCart(ArrayList<Item> items) {
-        double total = 0;
-        for(Item item : items){
-            total += item.getPrice();
+    public double getItemPrice(Item item) {
+        double price;
+        if(item.getQuantity() > 0){
+            price = item.getPrice();
+        }else{
+            System.out.println("Sorry, but item: " + item.getId() +" is out of stock, you cannot buy this item now");
+            price = 0;
         }
-        return total;
+        return price;
     }
     public void seeShoppingCard(HashMap<Integer, Item> items) {
         ArrayList<Item> arrayForItemObjects = getItemArray(items);
-
-        double total = getTotalForCart(arrayForItemObjects);
-
-        for (Item item : arrayForItemObjects) {
-            System.out.println(item);
+        double total = 0;
+        for(Item item : arrayForItemObjects){
+            double itemPrice = getItemPrice(item);
+            total += itemPrice;
+            if(itemPrice != 0){
+                System.out.println(item);
+            }
         }
 
-        if(total==0){
+        if(arrayForItemObjects.isEmpty()){
             System.out.println("Your shopping card is empty");
         }else {
             System.out.println("Total for cart: " + total);
@@ -95,23 +100,22 @@ public class Account implements Serializable {
     }
 
     public HashMap<Integer,Item> buyItemsInShoppingCard(HashMap<Integer, Item> items) {
-        ArrayList<Item> arrayForItemObjects = getItemArray(items);
-
-        double priceItemsShoppingCard = getTotalForCart(arrayForItemObjects);
-
-        if(priceItemsShoppingCard <= balance) {
-            for (Integer id : idItemsShoppingCard) {
-                System.out.println(id);
-                if (items.containsKey(id)) {
-                    Item item = items.get(id);
-                    System.out.println(item);
+        for(Integer id : idItemsShoppingCard){
+            if(items.containsKey(id)){
+                Item item = items.get(id);
+                if(item.getQuantity() > 0 && item.getPrice() <= balance){
                     item.setQuantity(item.getQuantity() - 1);
+                    balance -= item.getPrice();
+                    idItemsShoppingCard.remove(id);
+                    System.out.println("Item " + id + " bought successfully");
+                }else if(item.getQuantity() == 0){
+                    System.out.println("Item " + id + " is out of stock, you cannot buy this item now");
+                }else if(item.getPrice() >= balance){
+                    System.out.println("You cant buy this item" + item.getId() + "now, not enough money");
                 }
             }
-            System.out.println("Your shopping card is bought successfully");
-        }else{
-            System.out.println("Not enough money");
         }
+        System.out.println("Your balance is: " + balance);
         return items;
     }
 
