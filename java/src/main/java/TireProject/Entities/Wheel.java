@@ -1,4 +1,4 @@
-package TireProject.ItemEntity;
+package TireProject.Entities;
 
 import java.io.Serial;
 import java.io.Serializable;

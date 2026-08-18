@@ -1,30 +1,44 @@
 package TireProject.ConsoleUI;
 
-import TireProject.AccountEntity.Account;
-import TireProject.ItemEntity.Item;
-import TireProject.ItemEntity.Tire;
-import TireProject.ItemEntity.Wheel;
-import TireProject.VerifyService.PasswordService;
+
+
+import TireProject.ConsoleUI.UIPrintService.PrintService;
+import TireProject.Entities.Account;
+import TireProject.Entities.Item;
+import TireProject.Services.DataService;
+import TireProject.Services.PasswordService;
+import TireProject.Services.ShoppingCardService;
+import TireProject.Entities.*;
+
 
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class ConsoleUI implements MenuOptions {
     HashMap<String, Account> accounts;
-    HashMap<Integer,Item> items;
+    HashMap<Integer, Item> items;
     Scanner sc;
-    UIService uiService;
+    PrintService printService;
+    DataService ds;
     PasswordService passwordService;
+    ShoppingCardService scs;
+
     public ConsoleUI() {
+
         accounts = new HashMap<>();
         items = new HashMap<>();
+
         sc = new Scanner(System.in);
-        uiService = new UIService();
+
+        ///Creating objects for initialisations classes
+        printService = new PrintService();
         passwordService = new PasswordService();
+        ds =new DataService();
+        scs = new ShoppingCardService();
 
-        items = uiService.loadItemsFromFile();
-        accounts = uiService.loadAccountsFromFile();
-
+        /// Initialisation data
+        items = ds.loadItemsFromFile();
+        accounts = ds.loadAccountsFromFile();
     }
 
     @Override
@@ -43,7 +57,7 @@ public class ConsoleUI implements MenuOptions {
             String operation = sc.nextLine();
             switch (operation) {
                 case "1":
-                    uiService.printItems(items);
+                    printService.printItems(items);
                     break;
                 case "2":
                     System.out.println("Which type of item would you like to see?");
@@ -52,15 +66,15 @@ public class ConsoleUI implements MenuOptions {
 
                     String answer = sc.nextLine();
                     if(answer.equals("1")){
-                        uiService.printItemsWithFilter(items,0);
+                        printService.printItemsWithFilter(items,0);
                     }else if(answer.equals("2")){
-                        uiService.printItemsWithFilter(items,1);
+                        printService.printItemsWithFilter(items,1);
                     }else{
                         System.out.println("Invalid input");
                     }
                     break;
                 case "3":
-                    uiService.printItems(items);
+                    printService.printItems(items);
                     System.out.println("Which item would you like to add to shopping cart?");
                     String itemId = sc.nextLine();
                     int itemIdInt;
@@ -81,10 +95,10 @@ public class ConsoleUI implements MenuOptions {
                     }
                     break;
                 case "4":
-                    account.seeShoppingCard(items);
+                    scs.seeShoppingCard(items,account);
                     break;
                 case "5":
-                    account.seeShoppingCard(items);
+                    scs.seeShoppingCard(items,account);
                     System.out.println("Which item would you like to remove from shopping cart?");
                     String removeItemId = sc.nextLine();
                     int removeItemIdInt = 0;
@@ -99,11 +113,11 @@ public class ConsoleUI implements MenuOptions {
                     account.removeItemFromShoppingCard(removeItemIdInt);
                     break;
                 case "6":
-                    items = account.buyItemsInShoppingCard(items);
-                    uiService.saveItemToFile(items);
+                    items = scs.buyItemsInShoppingCard(items,account);
+                    ds.saveItemToFile(items);
                     break;
                 case "7":
-                    uiService.saveAccountsToFile(accounts);
+                    ds.saveAccountsToFile(accounts);
                     return;
                 default:
                     System.out.println("Invalid input");
@@ -169,7 +183,7 @@ public class ConsoleUI implements MenuOptions {
                             item.setPrice(price);
                             System.out.println("Price successfully changed");
                         }
-                        uiService.saveItemToFile(items);
+                        ds.saveItemToFile(items);
                         break;
                 case "2":
                     System.out.println("Which type of item would you like to create: Tire / Wheel");
@@ -275,7 +289,7 @@ public class ConsoleUI implements MenuOptions {
                             break;
                         }
                     }
-                    uiService.saveItemToFile(items);
+                    ds.saveItemToFile(items);
                     break;
                 case "3":
                     for(Item i : items.values()){
@@ -294,17 +308,17 @@ public class ConsoleUI implements MenuOptions {
                     }catch(Exception e){
                         System.out.println("Item with id " + id + " not found");
                     }
-                    uiService.saveItemToFile(items);
+                    ds.saveItemToFile(items);
                     for(Account acc : accounts.values()){
                         acc.removeItemFromShoppingCard(id);
                     }
                     System.out.println("Item was successfully deleted");
                     break;
                 case "4":
-                    uiService.printItems(items);
+                    printService.printItems(items);
                     break;
                 case "5":
-                    uiService.saveItemToFile(items);
+                    ds.saveItemToFile(items);
                     return;
                 default:
                     System.out.println("Invalid choice, try again");
@@ -355,16 +369,6 @@ public class ConsoleUI implements MenuOptions {
                         }else{
                             System.out.println("Incorrect password, try again");
                         }
-//                            if (account.getHashedPassword().equals(HashedPassword)) {
-//                                if (account.getName().equals("Admin")) {
-//                                    showMenuForAdmin(account);
-//                                } else {
-//                                    showMenuForUser(account);
-//                                }
-//                                break;
-//                            } else {
-//                                System.out.println("Incorrect password, try again");
-//                            }
                     }
                 /// User Interface for Registration
             } else if (answer.equalsIgnoreCase("Reg")) {
@@ -418,7 +422,7 @@ public class ConsoleUI implements MenuOptions {
                     //Create new account for new user
                     Account account = new Account(name, password, balanceDouble);
                     accounts.put(account.getName(), account);
-                    uiService.saveAccountsToFile(accounts);
+                    ds.saveAccountsToFile(accounts);
 
                     if(account.getName().equals("Admin")){
                         showMenuForAdmin(account);

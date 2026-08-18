@@ -1,4 +1,4 @@
-package TireProject.VerifyService;
+package TireProject.Services;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

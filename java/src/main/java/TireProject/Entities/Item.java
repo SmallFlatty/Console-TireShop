@@ -1,4 +1,4 @@
-package TireProject.ItemEntity;
+package TireProject.Entities;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -55,10 +55,6 @@ public class Item implements Serializable {
 
     public static void setInexOfId(int inexOfId) {
         Item.inexOfId = inexOfId;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getTypeItemId(){return 0;}

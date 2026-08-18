@@ -1,6 +1,6 @@
 package TireProject.ConsoleUI;
 
-import TireProject.AccountEntity.Account;
+import TireProject.Entities.Account;
 
 public interface MenuOptions {
     void showMenuForUser(Account account);

@@ -1,37 +1,16 @@
-package TireProject.ConsoleUI;
+package TireProject.Services;
 
-import TireProject.AccountEntity.Account;
-import TireProject.ItemEntity.Item;
+
+import TireProject.Entities.Account;
+import TireProject.Entities.Item;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Scanner;
 
-public class UIService {
+public class DataService {
     private final String itemsURL = "java/src/main/java/TireProject/InformationFiles/Items.dat";
     private final String accountsURL = "java/src/main/java/TireProject/InformationFiles/Accounts.dat";
-
-
-    public void printItems(HashMap<Integer, Item> items) {
-        for(Item item : items.values()) {
-            System.out.println(item);
-        }
-    }
-    public void printItemsWithFilter(HashMap<Integer, Item> items, int typeItemId) {
-        if(typeItemId == 0) {
-            for (Item item : items.values()) {
-                if (item.getTypeItemId() == 0) {
-                    System.out.println(item);
-                }
-            }
-        }
-        if(typeItemId == 1) {
-            for (Item item : items.values()) {
-                if (item.getTypeItemId() == 1) {
-                    System.out.println(item);
-                }
-            }
-        }
-    }
 
     public int getMaxIdForItem(HashMap<Integer, Item> items){
         int maxId = 0;
@@ -42,6 +21,7 @@ public class UIService {
         }
         return maxId;
     }
+
     public int getMaxIdForAccount(HashMap<String, Account> accounts){
         int maxId = 0;
         for(Account account : accounts.values()) {
@@ -97,12 +77,12 @@ public class UIService {
                 Account acc = (Account) ois.readObject();
                 accounts.put(acc.getName(), acc);
             }
-        } catch(Exception ignored){}
+        } catch(Exception ignored){
+        }
 
         int maxId = getMaxIdForAccount(accounts);
         Account.setIdCount(maxId+1);
 
         return accounts;
     }
-
 }
