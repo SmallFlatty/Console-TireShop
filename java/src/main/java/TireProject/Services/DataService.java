@@ -6,7 +6,6 @@ import TireProject.Entities.Item;
 
 import java.io.*;
 import java.util.HashMap;
-import java.util.Scanner;
 
 public class DataService {
     private final String itemsURL = "java/src/main/java/TireProject/InformationFiles/Items.dat";
